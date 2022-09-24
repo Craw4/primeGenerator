@@ -3,7 +3,6 @@ package literateProgramming;
 public class NumberPrinter {
     private final int rowsPerPage;
     private final int columnsPerPage;
-    private int pageNumber;
     private int[] numbers;
 
     public NumberPrinter(int rowsPerPage, int columnsPerPage) {
@@ -12,31 +11,28 @@ public class NumberPrinter {
     }
 
     void print(int[] numbers, String title) {
-        initialize(numbers);
-        while (needToPrintMorePages()) {
-            printHeader(title);
-            printNumbersOnPage();
-            moveToNextPage();
+        this.numbers = numbers;
+        int pageNumber = 1;
+        while (needToPrintMorePages(pageNumber)) {
+            printHeader(title, pageNumber);
+            printNumbersOnPage(pageNumber);
+            System.out.println("\f");
+            pageNumber++;
         }
     }
 
-    private void initialize(int[] numbers) {
-        pageNumber = 1;
-        this.numbers = numbers;
+    private boolean needToPrintMorePages(int pageNumber) {
+        return getPageOffset(pageNumber) <= getNumberOfNumbers();
     }
 
-    private boolean needToPrintMorePages() {
-        return getPageOffset() <= getNumberOfNumbers();
-    }
-
-    private void printHeader(String title) {
+    private void printHeader(String title, int pageNumber) {
         System.out.printf("%s --- Page %d\n%n", title, pageNumber);
     }
 
-    private void printNumbersOnPage() {//18 min
+    private void printNumbersOnPage(int pageNumber) {//18 min
         for (int row = 0; row < rowsPerPage; row++) {
             for (int col = 0; col <= columnsPerPage - 1; col++)
-                printNumberAt(getPageOffset() + row +  col * rowsPerPage);
+                printNumberAt(getPageOffset(pageNumber) + row +  col * rowsPerPage);
             System.out.println();
         }
     }
@@ -46,12 +42,7 @@ public class NumberPrinter {
             System.out.printf("%10d", numbers[index]);
     }
 
-    private void moveToNextPage() {
-        System.out.println("\f");
-        pageNumber++;
-    }
-
-    public int getPageOffset() {
+    public int getPageOffset(int pageNumber) {
         return (pageNumber -1) * rowsPerPage * columnsPerPage + 1;
     }
 
